@@ -1,0 +1,21 @@
+version: '3'
+services:
+  go-service:
+    build: ./backend/go-service
+    ports:
+      - "8080:8080"
+    networks:
+      - urlshortener-net
+
+  nestjs-service:
+    build: ./backend/nestjs
+    ports:
+      - "3000:3000"
+    depends_on:
+      - go-service
+    networks:
+      - urlshortener-net
+
+networks:
+  urlshortener-net:
+    driver: bridge
