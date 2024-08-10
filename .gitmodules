@@ -1,0 +1,3 @@
+[submodule "backend/nestjs/pruner-api"]
+	path = backend/nestjs/pruner-api
+	url = https://github.com/softcruder/pruner
