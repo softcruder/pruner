@@ -1,16 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
-import { UrlShortenerController } from './url-shortener.controller';
+import { AuthController } from './auth.controller';
 
-describe('UrlShortenerController', () => {
-  let controller: UrlShortenerController;
+describe('AuthController', () => {
+  let controller: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UrlShortenerController],
+      controllers: [AuthController],
     }).compile();
 
-    controller = module.get<UrlShortenerController>(UrlShortenerController);
+    controller = module.get<AuthController>(AuthController);
   });
 
   it('should be defined', () => {
