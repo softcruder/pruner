@@ -11,7 +11,7 @@ import { SecurityMiddleware } from './common/middleware/security.middleware';
 // import { ValidationPipe } from './common/pipes/validation.pipe';
 // import { SanitizationPipe } from './common/pipes/sanitization.pipe';
 import { ConfigModule } from './config/config.module';
-import { Urls } from './url-shortener/entity/url.entity';
+import { Url } from './url-shortener/entity/url.entity';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { Urls } from './url-shortener/entity/url.entity';
       // username: 'softcruder',
       // password: 'FHx4erMoZZhWfRZc',
       database: 'pruner',
-      entities: [User, Urls],
+      entities: [User, Url],
       synchronize: true,
     }),
     UrlShortenerModule, 

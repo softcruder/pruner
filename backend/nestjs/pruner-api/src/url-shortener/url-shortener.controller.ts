@@ -1,20 +1,28 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, Post, Query, Req, UseGuards, Logger } from '@nestjs/common';
 import { UrlShortenerService } from './url-shortener.service';
 import { UrlDto } from './dto/url.dto';
-import { Urls } from './entity/url.entity';
-import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { Url } from './entity/url.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('url')
 export class UrlShortenerController {
   constructor(private readonly urlShortenerService: UrlShortenerService) {}
+  // Add Logger
+private readonly logger = new Logger(UrlShortenerController.name);
 
   @Post('shorten')
-  async shortenUrl(@Query('longUrl') longUrl: string): Promise<Urls> {
+  async shortenUrl(@Query('longUrl') longUrl: string, @Req() req: Request): Promise<Url> {
     if (!longUrl) {
         throw new BadRequestException('You must provide the url to shorten');
     }
-    return this.urlShortenerService.shortenUrl(longUrl);
+    const user = (req as any).user; // User from JWT after authentication
+    let userId: string | undefined;
+
+    if (user) {
+        userId = user.sub; // 'sub' from JWT payload (userId)
+    }
+    return this.urlShortenerService.shortenUrl(longUrl, userId);
   }
 
   @Get(':id')
@@ -25,7 +33,7 @@ export class UrlShortenerController {
     return this.urlShortenerService.retrieveUrl(id);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('users')
   async retrieveUserUrls(@Query('user') userId: string): Promise<UrlDto[]> {
     if (!userId) {

@@ -1,16 +1,37 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Param, Post, Body, UseGuards, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  Body,
+//   UseGuards,
+  UnauthorizedException,
+  HttpException,
+  HttpStatus,
+  NotAcceptableException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guard';
+// import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { Request, Response } from 'express';
 
 /**
  * Controller responsible for handling authentication-related requests.
  */
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+    ) {}
+
+    // Add Logger
+    private readonly logger = new Logger(AuthService.name);
 
     /**
      * Endpoint to check if a username already exists.
@@ -19,6 +40,10 @@ export class AuthController {
      */
     @Get('check-username/:username')
     async checkUsername(@Param('username') username: string) {
+        if (!username) {
+            throw new BadRequestException();
+        }
+        this.logger.log(`Checking username: ${username}`);
       const exists = await this.authService.doesUsernameExist(username);
       return { exists };
     }
@@ -29,15 +54,26 @@ export class AuthController {
      * @returns The authentication token if login is successful.
      * @throws UnauthorizedException if the login credentials are invalid.
      */
-    @UseGuards(LocalAuthGuard)
+    // @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Body() loginDto: LoginDto) {
+    async login(@Body() loginDto: LoginDto, @Res() res: Response) {
         const { identifier, password } = loginDto;
+        if (!identifier || !password) {
+            throw new NotAcceptableException();
+        }
         const user = await this.authService.validateUser(identifier, password);
         if(!user) {
             throw new UnauthorizedException({message: 'Invalid credentials'});
         }
-        return this.authService.login(user);
+        this.logger.log(`Logging in user: ${user.username}`);
+        await this.authService.login(user, res);
+
+        return res.status(HttpStatus.OK).json({
+            data: {
+                destination: 'dashboard',
+            },
+            message: 'Login Successful',
+        });
     }
 
     /**
@@ -66,4 +102,12 @@ export class AuthController {
             }, HttpStatus.BAD_REQUEST);
         }
     }    
+
+    @Post('refresh')
+    async refreshToken(@Req() req: Request, @Res() res: Response) {
+      const refreshToken = req.cookies['refresh_token'];
+      const newAccessToken = await this.authService.refreshAccessToken(refreshToken, res);
+      res.json(newAccessToken);
+    }
+
 }

@@ -2,7 +2,7 @@
 import { Entity, ObjectId, Column, ObjectIdColumn } from 'typeorm';
 
 @Entity()
-export class Urls {
+export class Url {
   @ObjectIdColumn()
   _id: ObjectId;
 
@@ -12,8 +12,8 @@ export class Urls {
   @Column()
   long_url: string;
 
-  @Column({ foreignKeyConstraintName: 'username' })
-  username: string;
+  @Column()
+  user: object;
 
   @Column({ default: true })
   is_active: boolean;

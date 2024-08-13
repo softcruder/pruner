@@ -4,11 +4,11 @@ import { UrlShortenerController } from './url-shortener.controller';
 import { HttpModule } from '@nestjs/axios';
 import { RateLimitingMiddleware } from '../common/middleware/rate-limiting.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Urls } from './entity/url.entity';
+import { Url } from './entity/url.entity';
 
 @Module({
   providers: [UrlShortenerService],
-  imports: [HttpModule, TypeOrmModule.forFeature([Urls])],
+  imports: [HttpModule, TypeOrmModule.forFeature([Url])],
   controllers: [UrlShortenerController],
 })
 export class UrlShortenerModule {
