@@ -10,6 +10,6 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
-  await app.listen(3500);
+  await app.listen(process.env.PORT || 10001);
 }
 bootstrap();
