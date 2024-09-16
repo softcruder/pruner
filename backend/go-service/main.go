@@ -116,7 +116,7 @@ func redirectURL(w http.ResponseWriter, r *http.Request) {
 }
 
 func generateShortID() string {
-	const length = 6
+	const length = 8
 	randomBytes := make([]byte, length)
 	_, err := rand.Read(randomBytes)
 	if err != nil {
@@ -126,6 +126,6 @@ func generateShortID() string {
 	
 	shortID := base64.URLEncoding.EncodeToString(randomBytes)
 	// Remove any trailing '=' and truncate to 6 characters
-	shortID = strings.TrimRight(shortID, "=")[:6]
+	shortID = strings.TrimRight(shortID, "=")[:8]
 	return shortID
 }

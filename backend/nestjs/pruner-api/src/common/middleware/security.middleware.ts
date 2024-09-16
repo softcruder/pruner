@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 @Injectable()
 export class SecurityMiddleware implements NestMiddleware {
   private encryptionKey = process.env.ENCRYPT_KEY || '1b381197a7c3a59e6dd23f22bd7dx469'; // Securely set this in environment variables
-  private apiKey = process.env.API_KEY || '?f6ad0b8bd4c738&';
+  private apiKey = process.env.API_KEY;
   private ivLength = 16; // For AES, this is usually 16 bytes
 
   // Function to encrypt data
@@ -50,7 +50,7 @@ export class SecurityMiddleware implements NestMiddleware {
     const bhash = req.headers['x-bhash'];
 
     if (!apikey || apikey !== (process.env.API_KEY || this.apiKey)) {
-      throw new UnauthorizedException('Forbidden');
+      throw new UnauthorizedException('Forbidden Resource');
     }
 
     if ([

@@ -62,10 +62,6 @@ export class UrlShortenerService {
         await this.redisClient.expire(key, 60 * 60 * 24); // Set expiry for 24 hours
     }
 
-    // Make a request to the Go service to generate the short_id
-    const goServiceUrl = `http://localhost:8080/shorten?url=${longUrl}`;
-    const response = await firstValueFrom(this.httpService.get(goServiceUrl));
-
     const now = new Date().toISOString();
 
     // If the URL exists but is not active, update it to be active again
@@ -75,6 +71,10 @@ export class UrlShortenerService {
         this.logger.log(`Reactivating URL: ${longUrl}`);
         return this.urlRepository.save(existingUrl);
     }
+
+    // Make a request to the Go service to generate the short_id
+    const goServiceUrl = `http://localhost:8080/shorten?url=${longUrl}`;
+    const response = await firstValueFrom(this.httpService.get(goServiceUrl));
 
     // Create a new shortened URL entry
     const newUrl = this.urlRepository.create({
